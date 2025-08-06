@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Скоро встреча ❤️</title>
+  <style>
+    body {
+      background: url('image.png') no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      color: white;
+      text-shadow: 1px 1px 3px #000;
+      overflow-x: hidden;
+    }
+
+    .overlay {
+      background: rgba(0, 0, 0, 0.5);
+      min-height: 100vh;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      text-align: center;
+    }
+
+    #timer {
+      font-size: 2em;
+      margin: 20px 0;
+    }
+
+    .message {
+      font-size: 1.3em;
+      margin-top: 30px;
+      max-width: 500px;
+      text-align: center;
+      transition: opacity 1s ease;
+    }
+
+    .hidden {
+      opacity: 0;
+    }
+
+    .secret-button {
+      margin-top: 40px;
+      padding: 12px 25px;
+      font-size: 1em;
+      background: rgba(255, 255, 255, 0.85);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      color: #333;
+      font-weight: bold;
+      transition: background 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .secret-button:hover {
+      background: rgba(255, 255, 255, 1);
+    }
+
+    .popup {
+      display: none;
+      margin-top: 20px;
+      font-size: 1.4em;
+      background-color: rgba(0, 0, 0, 0.6);
+      padding: 15px;
+      border-radius: 12px;
+      max-width: 500px;
+      text-align: center;
+      animation: popupFade 0.6s ease-out forwards;
+      opacity: 0;
+      transform: scale(0.8);
+    }
+
+    @keyframes popupFade {
+      from {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    /* Эмодзи-анимация */
+    .emoji {
+      position: absolute;
+      font-size: 24px;
+      pointer-events: none;
+      animation: floatUp 1s ease-out forwards;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100px) scale(1.5) rotate(20deg);
+        opacity: 0;
+      }
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.8em;
+      }
+
+      #timer {
+        font-size: 1.5em;
+      }
+
+      .message {
+        font-size: 1.1em;
+      }
+
+      .popup {
+        font-size: 1.1em;
+        padding: 10px;
+      }
+
+      .secret-button {
+        font-size: 0.95em;
+        padding: 10px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay">
+    <h1>До нашей встречи осталось:</h1>
+    <div id="timer">Загрузка...</div>
+
+    <div class="message" id="message">💌 Думаю о тебе во сне) 💌</div>
+
+    <button class="secret-button" onclick="showSecret(event)">Нажми, если скучаешь 💖</button>
+    <div class="popup" id="popup">
+      Я тоже скучаю. Но скоро мы будем вместе, и я обниму тебя так крепко, что ты забудешь, каково это — скучать ❤️
+    </div>
+  </div>
+
+  <script>
+    const targetDate = new Date(2025, 7, 9, 18, 0);
+
+    function updateTimer() {
+      const now = new Date();
+      const diff = targetDate - now;
+
+      if (diff <= 0) {
+        document.getElementById("timer").innerHTML = "🎉 Мы уже вместе! 🎉";
+        return;
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / 1000 / 60) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+
+      document.getElementById("timer").innerHTML =
+        `${days} дн. ${hours} ч. ${minutes} мин. ${seconds} сек.`;
+    }
+
+    setInterval(updateTimer, 900);
+    updateTimer();
+
+    const messages = [
+      "💌 Я очень скучаю по тебе 💌",
+      "🌙 Думаю о тебе каждый вечер 🌙",
+      "🕰️ Каждый день без тебя — слишком долгий 🕰️",
+      "🎀 Ты — моя самая большая радость 🎀",
+      "❤️ Скоро обниму тебя крепко-крепко ❤️"
+    ];
+
+    let msgIndex = 0;
+    const msgEl = document.getElementById("message");
+
+    setInterval(() => {
+      msgEl.classList.add("hidden");
+      setTimeout(() => {
+        msgIndex = (msgIndex + 1) % messages.length;
+        msgEl.innerHTML = messages[msgIndex];
+        msgEl.classList.remove("hidden");
+      }, 1000);
+    }, 5000);
+
+    function showSecret(e) {
+      // Показываем секрет
+      const popup = document.getElementById("popup");
+      popup.style.display = "block";
+      popup.style.animation = "popupFade 0.6s ease-out forwards";
+
+      // Эмодзи-эффект
+      for (let i = 0; i < 12; i++) {
+        createEmoji(e.target);
+      }
+    }
+
+    function createEmoji(button) {
+      const emojis = ["❤️", "✨", "💖", "🌟"];
+      const emoji = document.createElement("div");
+      emoji.classList.add("emoji");
+      emoji.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+
+      // Позиционирование по кнопке
+      const rect = button.getBoundingClientRect();
+      emoji.style.left = Math.random() * rect.width + rect.left + "px";
+      emoji.style.top = rect.top + window.scrollY + "px";
+
+      document.body.appendChild(emoji);
+
+      setTimeout(() => {
+        emoji.remove();
+      }, 1000);
+    }
+  </script>
+</body>
+</html>
