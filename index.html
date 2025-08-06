@@ -2,11 +2,13 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Скоро встреча ❤️</title>
   <style>
     body {
-      background: url('image.png') no-repeat center center fixed;
+      /* Если хочешь оптимизировать фон под мобильные,
+         можно заменить этот фон на <img loading="lazy" /> с абсолютным позиционированием */
+      background: url('image.jpg') no-repeat center center fixed;
       background-size: cover;
       font-family: 'Segoe UI', sans-serif;
       margin: 0;
@@ -58,9 +60,10 @@
       cursor: pointer;
       color: #333;
       font-weight: bold;
-      transition: background 0.3s;
+      transition: background 0.3s, transform 0.3s;
       position: relative;
       overflow: hidden;
+      user-select: none;
     }
 
     .secret-button:hover {
@@ -76,7 +79,7 @@
       border-radius: 12px;
       max-width: 500px;
       text-align: center;
-      animation: popupFade 0.6s ease-out forwards;
+      animation-fill-mode: forwards;
       opacity: 0;
       transform: scale(0.8);
     }
@@ -92,17 +95,27 @@
       }
     }
 
+    @keyframes popupFadeReverse {
+      from {
+        opacity: 1;
+        transform: scale(1);
+      }
+      to {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+    }
+
     /* Эмодзи-анимация */
     .emoji {
       position: absolute;
-      font-size: 24px;
       pointer-events: none;
-      animation: floatUp 1s ease-out forwards;
+      animation-fill-mode: forwards;
     }
 
     @keyframes floatUp {
       0% {
-        transform: translateY(0) scale(1);
+        transform: translateY(0) scale(1) rotate(0deg);
         opacity: 1;
       }
       100% {
@@ -143,9 +156,9 @@
 
     <div class="message" id="message">💌 Думаю о тебе во сне) 💌</div>
 
-    <button class="secret-button" onclick="showSecret(event)">Нажми, если скучаешь 💖</button>
+    <button class="secret-button" onclick="showSecret(event)">нажми если скучаешь 💖</button>
     <div class="popup" id="popup">
-      Я тоже скучаю. Но скоро мы будем вместе, и я обниму тебя так крепко, что ты забудешь, каково это — скучать ❤️
+      Fac fideli sis fidelis , Fortiter ac firmiter  ❤️
     </div>
   </div>
 
@@ -193,34 +206,53 @@
       }, 1000);
     }, 5000);
 
-    function showSecret(e) {
-      // Показываем секрет
-      const popup = document.getElementById("popup");
-      popup.style.display = "block";
-      popup.style.animation = "popupFade 0.6s ease-out forwards";
+    let popupTimeout;
 
-      // Эмодзи-эффект
+    function showSecret(e) {
+      const popup = document.getElementById("popup");
+
+      // Если popup уже показан, сбрасываем таймер исчезновения
+      if (popup.style.display === "block") {
+        clearTimeout(popupTimeout);
+      } else {
+        popup.style.display = "block";
+        popup.style.animation = "popupFade 0.6s ease-out forwards";
+      }
+
+      // Таймер скрытия через 3.5 секунды
+      popupTimeout = setTimeout(() => {
+        popup.style.animation = "popupFadeReverse 0.6s ease-in forwards";
+        setTimeout(() => {
+          popup.style.display = "none";
+        }, 600);
+      }, 3500);
+
+      // Эмодзи-эффект: добавляем рандомные эмодзи с разными скоростями и позициями
       for (let i = 0; i < 12; i++) {
         createEmoji(e.target);
       }
     }
 
     function createEmoji(button) {
-      const emojis = ["❤️", "✨", "💖", "🌟"];
+      const emojis = ["❤️", "✨", "💖", "🌟", "🔥", "💫"];
       const emoji = document.createElement("div");
       emoji.classList.add("emoji");
       emoji.innerText = emojis[Math.floor(Math.random() * emojis.length)];
 
-      // Позиционирование по кнопке
       const rect = button.getBoundingClientRect();
-      emoji.style.left = Math.random() * rect.width + rect.left + "px";
+      emoji.style.left = rect.left + Math.random() * rect.width + "px";
       emoji.style.top = rect.top + window.scrollY + "px";
+
+      // Рандомизируем размер и длительность анимации
+      const duration = 800 + Math.random() * 700;
+      emoji.style.animation = `floatUp ${duration}ms ease-out forwards`;
+      emoji.style.fontSize = (16 + Math.random() * 16) + "px";
 
       document.body.appendChild(emoji);
 
       setTimeout(() => {
         emoji.remove();
-      }, 1000);
+      }, duration);
     }
   </script>
 </body>
